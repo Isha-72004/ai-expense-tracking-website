@@ -1,0 +1,6 @@
+{
+  "name": "AI Expense Tracker",
+  "description": "An AI-powered expense tracking and financial planning dashboard built with React, Express, Clean Architecture, SOLID principles, and Gemini AI. Includes JWT authentication, transaction category modeling, visual reporting, and complete Docker/CI-CD configs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

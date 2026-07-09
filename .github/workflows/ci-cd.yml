@@ -1,0 +1,46 @@
+name: Full-Stack CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v4
+    
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Compile and lint type checking
+      run: npm run lint
+      
+    - name: Compile Unified Fullstack Bundle
+      run: npm run build
+
+  deploy:
+    needs: validate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Authenticate to Cloud Provider
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Deploy Container to Managed Cloud Run
+      uses: google-github-actions/deploy-cloudrun@v2
+      with:
+        service: expense-tracker-api
+        image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/expense-tracker-api:${{ github.sha }}
+        region: us-central1
